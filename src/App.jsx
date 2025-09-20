@@ -1,18 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  FileText,
-  Brain,
-  Map,
-  Mic,
-  Briefcase,
-  LineChart,
-  BookOpen,
-  Users,
-  CheckCircle,
-  Star,
-  User,
-} from "lucide-react";
+import { Star, User } from "lucide-react";
 
 // ✅ Resume Maker Component
 function ResumeMaker() {
@@ -21,17 +9,27 @@ function ResumeMaker() {
   const [loading, setLoading] = useState(false);
 
   async function generateResume() {
-    setLoading(true);
-    setResume("");
+    try {
+      setLoading(true);
+      setResume("");
 
-    const res = await fetch("/.netlify/functions/askGemini", {
-      method: "POST",
-      body: JSON.stringify({ text: input }),
-    });
-    const data = await res.json();
+      const res = await fetch("/.netlify/functions/askGemini", {
+        method: "POST",
+        body: JSON.stringify({ text: input }),
+      });
 
-    setResume(data.result);
-    setLoading(false);
+      const data = await res.json();
+
+      if (res.ok) {
+        setResume(data.result);
+      } else {
+        setResume("⚠️ Error: " + (data.error || "Something went wrong"));
+      }
+    } catch (err) {
+      setResume("⚠️ Network error: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -101,7 +99,7 @@ function CareerDashboard() {
 
         {/* Main */}
         <main className="col-span-1 md:col-span-3 space-y-6">
-          {/* ✅ Resume Maker appears here */}
+          {/* ✅ Resume Maker */}
           <ResumeMaker />
 
           <div className="grid md:grid-cols-3 gap-6">
