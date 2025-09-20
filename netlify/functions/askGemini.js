@@ -1,10 +1,8 @@
-import fetch from "node-fetch";
-
 export async function handler(event) {
   try {
     const { text } = JSON.parse(event.body);
 
-    // ✅ Check if API key is being read
+    // ✅ Check if API key is being passed correctly
     const apiKey = process.env.GEMINI_API_KEY;
     console.log("Gemini API Key length:", apiKey ? apiKey.length : "MISSING");
 
@@ -19,7 +17,15 @@ export async function handler(event) {
               role: "user",
               parts: [
                 {
-                  text: `You are an expert career coach. Based on the following details:\n\n${text}\n\nGenerate a professional resume in plain text with sections: Summary, Skills, Experience, Education, Projects.`
+                  text: `You are an expert career coach. Based on the following candidate details:\n\n${text}\n\nGenerate a full professional resume. 
+                  Format it with clear sections:
+                  - Summary
+                  - Skills
+                  - Experience
+                  - Education
+                  - Projects
+
+                  The resume must look like a real one, not bullet notes.`
                 }
               ]
             }
