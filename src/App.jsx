@@ -415,4 +415,28 @@ export default function CareerAIApp() {
 
       {/* Final CTA */}
       <section className="text-center py-20 bg-gradient-to-r from-blue-600 to-blue-400 text-white">
-        <h2 className="text-3xl font-extrabold mb-
+        <h2 className="text-3xl font-extrabold mb-4">
+          Ready to build your career?
+        </h2>
+        <p className="mb-6 text-lg">
+          Start with a free resume and upgrade when you're ready to accelerate.
+        </p>
+        <button className="bg-white text-blue-600 px-8 py-3 rounded-full font-bold">
+          Get Started
+        </button>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12 text-center mt-12">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <p>© 2025 CareerAI. All rights reserved.</p>
+            <p className="text-sm text-gray-400">
+              Made with ❤️ to help job seekers succeed.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
