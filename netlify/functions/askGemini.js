@@ -16,7 +16,15 @@ export async function handler(event) {
               role: "user",
               parts: [
                 {
-                  text: `You are an expert career coach. Write an ATS-optimized resume for a candidate with this info:\n${text}\nOutput in clean markdown format.`
+                  text: `You are an expert career coach. Based on the following details:\n\n${text}\n\nGenerate a full professional resume in plain text. 
+                  Format it with clear sections:
+                  1. Summary
+                  2. Skills
+                  3. Experience
+                  4. Education
+                  5. Projects
+
+                  Make sure it looks like a real resume, not just bullet points.`
                 }
               ]
             }
@@ -26,15 +34,19 @@ export async function handler(event) {
     );
 
     const data = await response.json();
+
     const result =
-      data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "Sorry, no resume could be generated.";
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "⚠️ Sorry, no resume could be generated. Please try again.";
 
     return {
       statusCode: 200,
       body: JSON.stringify({ result }),
     };
   } catch (error) {
-    return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: error.message }),
+    };
   }
 }
