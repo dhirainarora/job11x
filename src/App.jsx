@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   FileText,
@@ -12,6 +13,52 @@ import {
   Star,
   User,
 } from "lucide-react";
+
+// ✅ Resume Maker Component
+function ResumeMaker() {
+  const [input, setInput] = useState("");
+  const [resume, setResume] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function generateResume() {
+    setLoading(true);
+    setResume("");
+
+    const res = await fetch("/.netlify/functions/askGemini", {
+      method: "POST",
+      body: JSON.stringify({ text: input }),
+    });
+    const data = await res.json();
+
+    setResume(data.result);
+    setLoading(false);
+  }
+
+  return (
+    <div className="bg-white p-6 shadow-md rounded-2xl mb-6">
+      <h4 className="font-bold mb-2">📝 AI Resume Maker</h4>
+      <textarea
+        className="w-full border p-2 rounded mb-3"
+        rows="5"
+        placeholder="Enter your skills, experience, etc."
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+      />
+      <button
+        onClick={generateResume}
+        className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+      >
+        {loading ? "Generating..." : "Generate Resume"}
+      </button>
+
+      {resume && (
+        <div className="mt-4 p-3 border rounded bg-gray-50 whitespace-pre-wrap">
+          {resume}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function CareerDashboard() {
   return (
@@ -50,20 +97,13 @@ function CareerDashboard() {
           <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg">
             Upgrade for Full Feedback
           </button>
-
-          <div className="mt-6 text-sm text-gray-500">
-            <p className="mb-2">
-              <strong>Next action:</strong> Add a quantified achievement to Work
-              Experience.
-            </p>
-            <p className="mb-1">
-              Deadline: <span className="font-medium">2 days</span>
-            </p>
-          </div>
         </aside>
 
         {/* Main */}
         <main className="col-span-1 md:col-span-3 space-y-6">
+          {/* ✅ Resume Maker appears here */}
+          <ResumeMaker />
+
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-white p-6 shadow-md rounded-2xl">
               <div className="flex items-center justify-between">
@@ -96,73 +136,6 @@ function CareerDashboard() {
               </div>
             </div>
           </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 shadow-md rounded-2xl">
-              <h4 className="font-bold mb-2">AI Mentor Snapshot</h4>
-              <p className="text-sm text-gray-600 mb-4">
-                "To improve your chances for Data Scientist roles, add 2 projects
-                with SQL+Pandas and quantify results."
-              </p>
-              <div className="flex gap-3">
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg">
-                  Chat with Mentor
-                </button>
-                <button className="bg-gray-200 px-4 py-2 rounded-lg">
-                  View Suggested Resources
-                </button>
-              </div>
-            </div>
-
-            <div className="bg-white p-6 shadow-md rounded-2xl">
-              <h4 className="font-bold mb-2">Interview Practice</h4>
-              <p className="text-sm text-gray-600 mb-4">
-                Next mock: Behavioral + SQL questions. Duration: 25 mins
-              </p>
-              <div className="flex items-center gap-4">
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg">
-                  Start Mock
-                </button>
-                <button className="bg-gray-200 px-4 py-2 rounded-lg">
-                  Schedule
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-2xl shadow-md">
-            <h4 className="font-bold mb-4">Job Tracker</h4>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 rounded-lg border">
-                <div>
-                  <p className="font-medium">Data Analyst — Acme Corp</p>
-                  <p className="text-sm text-gray-500">Applied 5 days ago</p>
-                </div>
-                <div className="text-sm font-semibold text-yellow-600">
-                  Interview
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-lg border">
-                <div>
-                  <p className="font-medium">Business Analyst — Fintech Ltd</p>
-                  <p className="text-sm text-gray-500">Applied 12 days ago</p>
-                </div>
-                <div className="text-sm font-semibold text-gray-500">Applied</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-2xl shadow-md">
-            <h4 className="font-bold mb-4">Portfolio Showcase</h4>
-            <div className="grid md:grid-cols-3 gap-4">
-              <div className="p-3 border rounded-lg">Project: Sales Forecasting</div>
-              <div className="p-3 border rounded-lg">
-                Project: Dashboard – Tableau
-              </div>
-              <div className="p-3 border rounded-lg">Project: Kaggle Notebook</div>
-            </div>
-          </div>
         </main>
       </div>
     </section>
@@ -175,20 +148,6 @@ export default function CareerAIApp() {
       {/* Header */}
       <header className="flex items-center justify-between p-6 bg-white shadow-md sticky top-0 z-50">
         <h1 className="text-2xl font-extrabold text-blue-700">CareerAI</h1>
-        <nav className="space-x-6 font-medium">
-          <a href="#features" className="hover:text-blue-600 transition">
-            Features
-          </a>
-          <a href="#pricing" className="hover:text-blue-600 transition">
-            Pricing
-          </a>
-          <a href="#faq" className="hover:text-blue-600 transition">
-            FAQ
-          </a>
-          <button className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-lg">
-            Login
-          </button>
-        </nav>
       </header>
 
       {/* Hero Section */}
@@ -202,87 +161,8 @@ export default function CareerAIApp() {
           🚀 Land Your Dream Job with AI
         </motion.h2>
         <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
-          Your all-in-one AI-powered career co-pilot: resumes, interviews, skill
-          growth, job tracking, and more.
+          Your all-in-one AI-powered career co-pilot: resumes, interviews, skill growth, job tracking, and more.
         </p>
-        <motion.div whileHover={{ scale: 1.05 }}>
-          <button className="px-12 py-6 text-lg bg-blue-600 text-white hover:bg-blue-700 shadow-lg rounded-xl">
-            Start Free Today
-          </button>
-        </motion.div>
-        <p className="mt-4 text-sm text-gray-600 font-medium">
-          ⚡ Early Bird Offer: 70% Off First 100 Users
-        </p>
-      </section>
-
-      {/* Features Section */}
-      <section
-        id="features"
-        className="grid md:grid-cols-3 gap-8 p-12 max-w-7xl mx-auto"
-      >
-        {[
-          {
-            icon: FileText,
-            title: "AI Resume & Cover Letter",
-            desc: "Generate ATS-friendly resumes & tailored cover letters instantly.",
-          },
-          {
-            icon: Brain,
-            title: "AI Mentor Mode",
-            desc: "Your personal AI career coach guiding every step.",
-          },
-          {
-            icon: Map,
-            title: "Job Roadmaps",
-            desc: "Step-by-step skill plans to reach your dream role.",
-          },
-          {
-            icon: Mic,
-            title: "Interview Practice",
-            desc: "Interactive AI mock interviews with instant scoring.",
-          },
-          {
-            icon: Briefcase,
-            title: "Job Tracker",
-            desc: "Track applied jobs with statuses: Applied → Interview → Offer → Hired.",
-          },
-          {
-            icon: LineChart,
-            title: "Career Insights",
-            desc: "Salary trends, demand graphs, and top companies hiring.",
-          },
-          {
-            icon: BookOpen,
-            title: "Skill Quizzes",
-            desc: "Test your skills with AI quizzes and unlock badges.",
-          },
-          {
-            icon: Users,
-            title: "Community Hub",
-            desc: "Connect with peers, share experiences, and grow together.",
-          },
-          {
-            icon: CheckCircle,
-            title: "Portfolio Showcase",
-            desc: "Upload projects & stand out to recruiters.",
-          },
-        ].map((f, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: i * 0.08 }}
-          >
-            <div className="bg-white shadow-lg hover:shadow-xl transition rounded-2xl">
-              <div className="flex flex-col items-center text-center p-8">
-                <f.icon className="h-12 w-12 text-blue-600 mb-4" />
-                <h3 className="font-bold text-lg mb-2">{f.title}</h3>
-                <p className="text-sm text-gray-600">{f.desc}</p>
-              </div>
-            </div>
-          </motion.div>
-        ))}
       </section>
 
       {/* Dashboard Preview */}
@@ -294,149 +174,6 @@ export default function CareerAIApp() {
           <CareerDashboard />
         </div>
       </section>
-
-      {/* Testimonials */}
-      <section className="py-24 bg-white">
-        <h2 className="text-center text-4xl font-extrabold mb-12">
-          🌟 Success Stories
-        </h2>
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto px-6">
-          {[
-            {
-              quote:
-                "CareerAI helped me land my first job at Deloitte with an optimized resume and AI mock interviews.",
-              name: "Ananya Sharma",
-              role: "Business Analyst",
-            },
-            {
-              quote:
-                "The AI mentor guided my learning roadmap. Within 6 months, I transitioned into Data Science.",
-              name: "Rahul Verma",
-              role: "Data Scientist",
-            },
-            {
-              quote:
-                "I loved the job tracker & insights. It kept me focused and I finally cracked Amazon interviews.",
-              name: "Sneha Kapoor",
-              role: "Software Engineer",
-            },
-          ].map((t, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.15 }}
-            >
-              <div className="bg-white p-8 shadow-lg text-center rounded-2xl hover:shadow-xl transition">
-                <p className="mb-4 text-gray-700 italic">“{t.quote}”</p>
-                <h4 className="font-bold text-lg">{t.name}</h4>
-                <p className="text-sm text-gray-500">{t.role}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section
-        id="pricing"
-        className="py-24 bg-gradient-to-r from-blue-100 to-blue-200 text-center"
-      >
-        <h2 className="text-4xl font-extrabold mb-6">💰 Pricing</h2>
-        <p className="mb-8 text-gray-700 text-lg">
-          Invest in your career growth today.
-        </p>
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto px-6">
-          <div className="bg-white p-8 shadow-lg rounded-2xl">
-            <h3 className="font-bold text-xl mb-3">Free</h3>
-            <p className="text-sm text-gray-600 mb-5">Basic resume & 1 roadmap</p>
-            <button className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg">
-              Start Free
-            </button>
-          </div>
-          <div className="bg-white p-8 shadow-lg rounded-2xl border-2 border-blue-600 relative">
-            <span className="absolute -top-3 right-3 bg-blue-600 text-white text-xs px-3 py-1 rounded-full">
-              Most Popular
-            </span>
-            <h3 className="font-bold text-xl mb-3">Pro</h3>
-            <p className="text-sm text-gray-600 mb-5">
-              Unlimited resumes, AI mentor, quizzes, roadmaps, interviews
-            </p>
-            <button className="bg-blue-600 text-white hover:bg-blue-700 shadow-md px-4 py-2 rounded-lg">
-              Get Pro
-            </button>
-          </div>
-          <div className="bg-white p-8 shadow-lg rounded-2xl">
-            <h3 className="font-bold text-xl mb-3">Premium</h3>
-            <p className="text-sm text-gray-600 mb-5">
-              All Pro features + live mentor sessions + priority support
-            </p>
-            <button className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg">
-              Get Premium
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section id="faq" className="py-20 bg-white">
-        <h2 className="text-3xl font-bold text-center mb-10">
-          ❓ Frequently Asked Questions
-        </h2>
-        <div className="max-w-4xl mx-auto space-y-6 px-6">
-          <details className="p-4 border rounded-md">
-            <summary className="font-semibold">Is CareerAI free to use?</summary>
-            <p className="mt-2 text-gray-600">
-              Yes, you can start with the Free plan and upgrade anytime.
-            </p>
-          </details>
-          <details className="p-4 border rounded-md">
-            <summary className="font-semibold">
-              How is it different from Zety or Kickresume?
-            </summary>
-            <p className="mt-2 text-gray-600">
-              Unlike others, CareerAI is a full career co-pilot: resume, cover
-              letter, mentor, roadmaps, interviews, insights, and more in one
-              platform.
-            </p>
-          </details>
-          <details className="p-4 border rounded-md">
-            <summary className="font-semibold">
-              Will this really help me get a job?
-            </summary>
-            <p className="mt-2 text-gray-600">
-              Yes – our AI tools are designed to make you stand out, and many
-              users have already landed jobs at top companies.
-            </p>
-          </details>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="text-center py-20 bg-gradient-to-r from-blue-600 to-blue-400 text-white">
-        <h2 className="text-3xl font-extrabold mb-4">
-          Ready to build your career?
-        </h2>
-        <p className="mb-6 text-lg">
-          Start with a free resume and upgrade when you're ready to accelerate.
-        </p>
-        <button className="bg-white text-blue-600 px-8 py-3 rounded-full font-bold">
-          Get Started
-        </button>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 text-center mt-12">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <p>© 2025 CareerAI. All rights reserved.</p>
-            <p className="text-sm text-gray-400">
-              Made with ❤️ to help job seekers succeed.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
