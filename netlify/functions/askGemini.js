@@ -4,12 +4,12 @@ export async function handler(event) {
   try {
     const { text } = JSON.parse(event.body);
 
-    // ✅ Debug log
-    console.log("Resume request received:", text);
+    // ✅ Check if API key is being read
+    const apiKey = process.env.GEMINI_API_KEY;
+    console.log("Gemini API Key length:", apiKey ? apiKey.length : "MISSING");
 
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
-        process.env.GEMINI_API_KEY,
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -19,7 +19,7 @@ export async function handler(event) {
               role: "user",
               parts: [
                 {
-                  text: `You are an expert career coach. Based on the following details:\n\n${text}\n\nGenerate a full professional resume in plain text with sections: Summary, Skills, Experience, Education, Projects.`
+                  text: `You are an expert career coach. Based on the following details:\n\n${text}\n\nGenerate a professional resume in plain text with sections: Summary, Skills, Experience, Education, Projects.`
                 }
               ]
             }
@@ -29,8 +29,6 @@ export async function handler(event) {
     );
 
     const data = await response.json();
-
-    // ✅ Debug log Gemini response
     console.log("Gemini raw response:", JSON.stringify(data, null, 2));
 
     if (!response.ok) {
